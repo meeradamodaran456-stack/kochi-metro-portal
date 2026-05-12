@@ -56,23 +56,27 @@ export default function AdminPanel() {
     fetchDepartments();
   }, [fetchStaff, fetchDepartments]);
 
-  const handleAddDept = async () => {
-    if (!newDept) return;
+  const addDepartment = async () => {
+    if (!newDept.trim()) return;
     try {
-      await client.post('/staff/departments', { name: newDept });
+      await client.post('/staff/departments', { name: newDept.trim() });
       setNewDept('');
-      fetchDepartments();
-      addNotification('Department added');
-    } catch (e) { alert('Failed to add department'); }
+      toast.success('Department added');
+      fetchDepartments(); // REFRESH THE LIST
+    } catch (err) {
+      toast.error('Failed to add department');
+    }
   };
 
-  const handleRemoveDept = async (name) => {
+  const deleteDepartment = async (name) => {
     if (!window.confirm(`Delete department "${name}"?`)) return;
     try {
       await client.delete(`/staff/departments/${name}`);
-      fetchDepartments();
-      addNotification('Department removed');
-    } catch (e) { alert('Failed to remove department'); }
+      toast.success('Department deleted');
+      fetchDepartments(); // REFRESH THE LIST
+    } catch (err) {
+      toast.error('Failed to delete department');
+    }
   };
 
   const handleSave = async (e) => {

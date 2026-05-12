@@ -4,36 +4,30 @@ const db     = require('../config/db');
 
 // POST /api/auth/register
 exports.register = async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ success: false, message: 'Username and password required.' });
-  }
+  let { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ success: false, message: 'Username and password required.' });
+  
+  username = username.toLowerCase().trim(); // Normalize
 
   try {
-    // Check if user exists
     const [existing] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
-    if (existing.length > 0) {
-      return res.status(400).json({ success: false, message: 'Username already taken.' });
-    }
+    if (existing.length > 0) return res.status(400).json({ success: false, message: 'Username already taken.' });
 
     const hash = await bcrypt.hash(password, 10);
-    await db.query('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', [
-      username,
-      hash,
-      'staff' // Default role is always staff
-    ]);
-
-    return res.json({ success: true, message: 'Account created! You can now login.' });
+    await db.query('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', [username, hash, 'staff']);
+    return res.json({ success: true, message: 'Account created! Please login.' });
   } catch (err) {
-    console.error('[Auth] Register error:', err);
+    console.error('Register error:', err);
     return res.status(500).json({ success: false, message: 'Server error.' });
   }
 };
 
 // POST /api/auth/login
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
+  let { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ success: false, message: 'Username and password required.' });
+
+  username = username.toLowerCase().trim(); // Normalize
   console.log(`[Auth] Login attempt for username: "${username}"`);
 
   if (!username || !password) {
