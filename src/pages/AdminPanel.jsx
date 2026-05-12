@@ -307,7 +307,7 @@ export default function AdminPanel() {
           </div>
         )}
         <div style={{textAlign:'center', padding:'1rem', opacity:0.5, fontSize:'0.8rem'}}>
-          Kochi Metro Portal v2.0.1
+          Kochi Metro Portal v2.0.2
         </div>
       </main>
     </div>

@@ -50,6 +50,13 @@ async function migrate() {
       console.log('✅  Admin account created');
     }
 
+    // ── Seed default departments
+    const depts = ['Customer Service', 'Finance', 'HR', 'IT', 'Maintenance', 'Marketing', 'Operations', 'Security', 'Production'];
+    for (let d of depts) {
+      await db.query('INSERT IGNORE INTO departments (name) VALUES (?)', [d]);
+    }
+    console.log('✅  Departments seeded');
+
     console.log('✅  Auto-migration complete');
   } catch (err) {
     console.error('❌  Migration failed:', err.message);
