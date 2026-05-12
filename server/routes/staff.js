@@ -5,6 +5,14 @@ const router  = express.Router();
 const staff   = require('../controllers/staffController');
 const auth    = require('../middleware/auth');
 
+// Never cache directory API responses (phone vs PC must always see the same server data)
+router.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
 // ── RBAC Middleware
 const isAdmin = (req, res, next) => {
   if (req.user && req.user.role === 'admin') return next();

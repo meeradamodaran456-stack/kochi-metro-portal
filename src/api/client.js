@@ -1,8 +1,11 @@
 import axios from 'axios';
 
+/** Same origin as all axios calls — import this anywhere you need the raw API base (e.g. export link). */
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL || 'https://kochi-metro-portal-production-f4d3.up.railway.app/api';
+
 const client = axios.create({
-  // Hardcoded correct Railway URL for universal sync
-  baseURL: 'https://kochi-metro-portal-production-f4d3.up.railway.app/api',
+  baseURL: API_BASE_URL,
   timeout: 15000,
 });
 

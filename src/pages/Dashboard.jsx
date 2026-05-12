@@ -37,6 +37,25 @@ export default function Dashboard() {
     }
   }, []);
 
+  // Refetch when this tab becomes visible again (e.g. edits made on another device)
+  useEffect(() => {
+    const refreshFromServer = () => {
+      if (document.visibilityState !== 'visible') return;
+      fetchStaff(query, department);
+      client.get('/staff/departments').then(r => setDepartments(r.data.data || [])).catch(() => {});
+    };
+    const onVisibility = () => refreshFromServer();
+    const onPageShow = (ev) => {
+      if (ev.persisted) refreshFromServer();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pageshow', onPageShow);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pageshow', onPageShow);
+    };
+  }, [query, department, fetchStaff]);
+
   const sanitizePhone = (num) => num ? num.replace(/[^0-9+]/g, '') : '';
 
   useEffect(() => {
@@ -132,9 +151,12 @@ export default function Dashboard() {
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                       </a>
                     </div>
-                    <div className="staff-card-details">
-                      <div><span>Dept:</span> {s.department}</div>
-                      <div><span>DID:</span> {s.did}</div>
+                    <div className="staff-card-details staff-card-details-grid">
+                      <div><span>Dept</span> {s.department || '—'}</div>
+                      <div><span>Ext</span> {s.extension_no || '—'}</div>
+                      <div><span>DID</span> {s.did || '—'}</div>
+                      <div><span>Direct</span> {s.direct_number || '—'}</div>
+                      <div><span>Mobile</span> {s.mobile_number || '—'}</div>
                     </div>
                   </div>
                 ))}

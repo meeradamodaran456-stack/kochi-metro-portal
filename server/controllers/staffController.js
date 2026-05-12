@@ -48,12 +48,15 @@ function sanitizeRow(row) {
 // ─── GET /api/staff/departments ───────────────────────────────────────────
 exports.getDepartments = async (req, res) => {
   try {
-    // Force no-cache to ensure fresh data on every load
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    
-    const [rows] = await db.query('SELECT name FROM departments ORDER BY name');
+    const [rows] = await db.query(`
+      SELECT DISTINCT dept AS name FROM (
+        SELECT name AS dept FROM departments
+        UNION
+        SELECT department AS dept FROM staff
+        WHERE COALESCE(TRIM(department), '') <> ''
+      ) AS u
+      ORDER BY dept
+    `);
     return res.json({ success: true, data: rows.map(r => r.name) });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Failed to fetch departments.' });
@@ -170,18 +173,6 @@ exports.search = async (req, res) => {
   } catch (err) {
     console.error('Search error:', err);
     return res.status(500).json({ success: false, message: 'Search failed.' });
-  }
-};
-
-// ─── GET /api/staff/departments ────────────────────────────────────────────
-exports.getDepartments = async (req, res) => {
-  try {
-    const [rows] = await db.query(
-      'SELECT DISTINCT department FROM staff WHERE department != "" ORDER BY department'
-    );
-    return res.json({ success: true, data: rows.map(r => r.department) });
-  } catch (err) {
-    return res.status(500).json({ success: false, message: 'Failed to load departments.' });
   }
 };
 

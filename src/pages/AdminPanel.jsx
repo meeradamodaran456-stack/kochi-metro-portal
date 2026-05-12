@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import client from '../api/client';
+import client, { API_BASE_URL } from '../api/client';
 
 export default function AdminPanel() {
   const { user, logout } = useAuth();
@@ -12,6 +12,7 @@ export default function AdminPanel() {
   const [currentRow, setCurrentRow] = useState(null);
   const [form, setForm] = useState({ staff_name: '', department: '', designation: '', extension_no: '', did: '', direct_number: '', mobile_number: '' });
   const [newDept, setNewDept] = useState('');
+  const [lastUpdateTime, setLastUpdateTime] = useState(0); // For state locking
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [notifications, setNotifications] = useState([]);
@@ -36,11 +37,13 @@ export default function AdminPanel() {
   };
 
   const fetchDepartments = useCallback(async () => {
+    // If we just modified something, don't let background sync overwrite it for 15s
+    if (Date.now() - lastUpdateTime < 15000) return;
     try {
       const { data } = await client.get(`/staff/departments?t=${Date.now()}`);
       setDepartments(data.data || []);
     } catch (e) { console.error(e); }
-  }, []);
+  }, [lastUpdateTime]);
 
   const fetchStaff = useCallback(async () => {
     setLoading(true);
@@ -71,6 +74,7 @@ export default function AdminPanel() {
       const { data } = await client.post('/staff/departments', { name: nameToAdd });
       setNewDept('');
       addNotification('Department added');
+      setLastUpdateTime(Date.now()); // Start the lock
       if (data.data) setDepartments(data.data);
     } catch (err) {
       alert('Failed to add department');
@@ -82,6 +86,7 @@ export default function AdminPanel() {
     try {
       const { data } = await client.delete(`/staff/departments/${name}`);
       addNotification('Department deleted');
+      setLastUpdateTime(Date.now()); // Start the lock
       if (data.data) setDepartments(data.data);
     } catch (err) {
       alert('Failed to delete department');
@@ -134,8 +139,7 @@ export default function AdminPanel() {
 
   const exportExcel = () => {
     const token = localStorage.getItem('km_token');
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    window.location.href = `${baseUrl}/staff/export?token=${token}`;
+    window.location.href = `${API_BASE_URL}/staff/export?token=${token}`;
   };
 
 
