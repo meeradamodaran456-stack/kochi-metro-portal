@@ -54,6 +54,14 @@ export default function AdminPanel() {
   useEffect(() => {
     fetchStaff();
     fetchDepartments();
+
+    // LIVE SYNC: Check for updates every 10 seconds
+    const interval = setInterval(() => {
+      fetchStaff();
+      fetchDepartments();
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, [fetchStaff, fetchDepartments]);
 
   const addDepartment = async () => {
