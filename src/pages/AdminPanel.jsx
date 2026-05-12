@@ -86,7 +86,12 @@ export default function AdminPanel() {
     try {
       await client.delete(`/staff/departments/${name}`);
       addNotification('Department deleted');
-      fetchDepartments(); // REFRESH THE LIST
+      // Update locally immediately
+      setDepartments(prev => prev.filter(d => d !== name));
+      
+      setTimeout(() => {
+        fetchDepartments();
+      }, 1000);
     } catch (err) {
       alert('Failed to delete department');
     }
