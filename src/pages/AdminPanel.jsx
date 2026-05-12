@@ -38,12 +38,7 @@ export default function AdminPanel() {
   const fetchDepartments = useCallback(async () => {
     try {
       const { data } = await client.get(`/staff/departments?t=${Date.now()}`);
-      const serverDepts = data.data || [];
-      // ULTIMATE FIX: Merge local and server lists so nothing ever disappears
-      setDepartments(prev => {
-        const merged = [...new Set([...prev, ...serverDepts])];
-        return merged.sort();
-      });
+      setDepartments(data.data || []);
     } catch (e) { console.error(e); }
   }, []);
 
@@ -65,18 +60,11 @@ export default function AdminPanel() {
     const nameToAdd = newDept.trim();
     if (!nameToAdd) return;
     try {
-      await client.post('/staff/departments', { name: nameToAdd });
+      const { data } = await client.post('/staff/departments', { name: nameToAdd });
       setNewDept('');
       addNotification('Department added');
-      // Update locally immediately
-      setDepartments(prev => [...new Set([...prev, nameToAdd])].sort());
-      
-      // Wait a moment for database to settle before fetching
-      setTimeout(() => {
-        fetchDepartments();
-      }, 1000);
+      if (data.data) setDepartments(data.data);
     } catch (err) {
-      console.error('Add department failed:', err);
       alert('Failed to add department');
     }
   };
@@ -84,14 +72,9 @@ export default function AdminPanel() {
   const deleteDepartment = async (name) => {
     if (!window.confirm(`Delete department "${name}"?`)) return;
     try {
-      await client.delete(`/staff/departments/${name}`);
+      const { data } = await client.delete(`/staff/departments/${name}`);
       addNotification('Department deleted');
-      // Update locally immediately
-      setDepartments(prev => prev.filter(d => d !== name));
-      
-      setTimeout(() => {
-        fetchDepartments();
-      }, 1000);
+      if (data.data) setDepartments(data.data);
     } catch (err) {
       alert('Failed to delete department');
     }

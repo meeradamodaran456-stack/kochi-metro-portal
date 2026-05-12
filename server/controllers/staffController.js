@@ -61,7 +61,8 @@ exports.addDepartment = async (req, res) => {
   if (!name) return res.status(400).json({ success: false, message: 'Name is required' });
   try {
     await db.query('INSERT IGNORE INTO departments (name) VALUES (?)', [name]);
-    return res.json({ success: true, message: 'Department added' });
+    const [rows] = await db.query('SELECT name FROM departments ORDER BY name');
+    return res.json({ success: true, message: 'Department added', data: rows.map(r => r.name) });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Failed to add department' });
   }
@@ -72,7 +73,8 @@ exports.removeDepartment = async (req, res) => {
   const { name } = req.params;
   try {
     await db.query('DELETE FROM departments WHERE name = ?', [name]);
-    return res.json({ success: true, message: 'Department removed' });
+    const [rows] = await db.query('SELECT name FROM departments ORDER BY name');
+    return res.json({ success: true, message: 'Department removed', data: rows.map(r => r.name) });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Failed to remove department' });
   }
