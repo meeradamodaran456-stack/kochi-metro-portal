@@ -57,13 +57,17 @@ export default function AdminPanel() {
   }, [fetchStaff, fetchDepartments]);
 
   const addDepartment = async () => {
-    if (!newDept.trim()) return;
+    const nameToAdd = newDept.trim();
+    if (!nameToAdd) return;
     try {
-      await client.post('/staff/departments', { name: newDept.trim() });
+      await client.post('/staff/departments', { name: nameToAdd });
       setNewDept('');
       addNotification('Department added');
-      fetchDepartments(); // REFRESH THE LIST
+      // Update locally immediately for instant feedback
+      setDepartments(prev => [...new Set([...prev, nameToAdd])].sort());
+      fetchDepartments(); 
     } catch (err) {
+      console.error('Add department failed:', err);
       alert('Failed to add department');
     }
   };
