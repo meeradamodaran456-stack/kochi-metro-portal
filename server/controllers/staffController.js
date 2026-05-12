@@ -48,6 +48,11 @@ function sanitizeRow(row) {
 // ─── GET /api/staff/departments ───────────────────────────────────────────
 exports.getDepartments = async (req, res) => {
   try {
+    // Force no-cache to ensure fresh data on every load
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
     const [rows] = await db.query('SELECT name FROM departments ORDER BY name');
     return res.json({ success: true, data: rows.map(r => r.name) });
   } catch (err) {
