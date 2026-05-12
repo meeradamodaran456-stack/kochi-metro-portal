@@ -61,10 +61,10 @@ export default function AdminPanel() {
     try {
       await client.post('/staff/departments', { name: newDept.trim() });
       setNewDept('');
-      toast.success('Department added');
+      addNotification('Department added');
       fetchDepartments(); // REFRESH THE LIST
     } catch (err) {
-      toast.error('Failed to add department');
+      alert('Failed to add department');
     }
   };
 
@@ -72,10 +72,10 @@ export default function AdminPanel() {
     if (!window.confirm(`Delete department "${name}"?`)) return;
     try {
       await client.delete(`/staff/departments/${name}`);
-      toast.success('Department deleted');
+      addNotification('Department deleted');
       fetchDepartments(); // REFRESH THE LIST
     } catch (err) {
-      toast.error('Failed to delete department');
+      alert('Failed to delete department');
     }
   };
 
