@@ -40,24 +40,14 @@ async function migrate() {
     `);
 
     // ── Seed default accounts
-    const [admin] = await db.query('SELECT * FROM users WHERE username = ?', ['admin@kochi.metro']);
-    if (admin.length === 0) {
+    const [users] = await db.query('SELECT * FROM users');
+    if (users.length === 0) {
       await db.query('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', [
         'admin@kochi.metro',
         '$2a$10$XXDNF59Qxu7.lDPZqhXNpuQSJ96nRgJYsU/oKu2A0anjbihCgweAG', // password: admin
         'admin'
       ]);
       console.log('✅  Admin account created');
-    }
-
-    const [staffUser] = await db.query('SELECT * FROM users WHERE username = ?', ['staff@kochi.metro']);
-    if (staffUser.length === 0) {
-      await db.query('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', [
-        'staff@kochi.metro',
-        '$2a$10$5b42DsEHL4gjtleKsG4WxOc.jNyn3oycRdLGwizJxGFNYAVEzeoli', // password: staff@kochi.metro
-        'staff'
-      ]);
-      console.log('✅  Staff account created');
     }
 
     console.log('✅  Auto-migration complete');
