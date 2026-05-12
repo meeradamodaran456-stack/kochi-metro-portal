@@ -182,12 +182,31 @@ body.pc-mode .main-layout { max-width: 100%; padding: 2rem 4rem; }
 
 /* ── RESPONSIVE ────────────────────────────────────── */
 @media (max-width: 768px) {
+  .app-container { padding: 0.75rem; }
+  
+  .nav-right { gap: 0.5rem; }
+  .user-profile span { display: none; } /* Hide "Administrator" on mobile */
+  .brand-logo { margin-right: 0.5rem; }
+  .logo-text { font-size: 1.1rem; }
+  .nav-link { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+
+  .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .stats-grid { width: 100%; grid-template-columns: 1fr 1fr; }
+  
+  .flex-between { flex-direction: column; align-items: flex-stretch; gap: 1rem; }
+  .flex-between div { flex-wrap: wrap; }
+  .btn { width: 100%; justify-content: center; }
+
+  .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .staff-table { min-width: 800px; } /* Ensure table doesn't squash */
+
+  .login-card { padding: 1.5rem; }
+  .form-grid { grid-template-columns: 1fr; }
   .search-section { flex-direction: column; }
   .filter-select { width: 100%; }
   .navbar { padding: 0.75rem 1rem; }
   .nav-links { display: none; }
   .main-layout { padding: 1rem; }
-  .form-grid { grid-template-columns: 1fr; }
 }
 
 /* ── UTILS ─────────────────────────────────────────── */
