@@ -59,10 +59,12 @@ export default function Login() {
           <div className="login-form-group">
             <input
               type="text"
+              name="km_username_field"
               className="login-input"
               placeholder="Username / Email"
               value={form.username}
               onChange={e => setForm({ ...form, username: e.target.value })}
+              autoComplete="off"
               required
             />
           </div>
@@ -70,10 +72,12 @@ export default function Login() {
           <div className="login-form-group">
             <input
               type="password"
+              name="km_password_field"
               className="login-input"
               placeholder="Password"
               value={form.password}
               onChange={e => setForm({ ...form, password: e.target.value })}
+              autoComplete="new-password"
               required
             />
           </div>
