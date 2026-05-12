@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  // Hardcoded correct Railway URL for universal sync
+  baseURL: 'https://kochi-metro-portal-production-f4d3.up.railway.app/api',
   timeout: 15000,
 });
 
