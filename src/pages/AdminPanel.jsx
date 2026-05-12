@@ -37,7 +37,7 @@ export default function AdminPanel() {
 
   const fetchDepartments = useCallback(async () => {
     try {
-      const { data } = await client.get('/staff/departments');
+      const { data } = await client.get(`/staff/departments?t=${Date.now()}`);
       setDepartments(data.data || []);
     } catch (e) { console.error(e); }
   }, []);
@@ -63,9 +63,13 @@ export default function AdminPanel() {
       await client.post('/staff/departments', { name: nameToAdd });
       setNewDept('');
       addNotification('Department added');
-      // Update locally immediately for instant feedback
+      // Update locally immediately
       setDepartments(prev => [...new Set([...prev, nameToAdd])].sort());
-      fetchDepartments(); 
+      
+      // Wait a moment for database to settle before fetching
+      setTimeout(() => {
+        fetchDepartments();
+      }, 1000);
     } catch (err) {
       console.error('Add department failed:', err);
       alert('Failed to add department');
