@@ -125,7 +125,8 @@ export default function AdminPanel() {
 
   const exportExcel = () => {
     const token = localStorage.getItem('km_token');
-    window.location.href = `http://localhost:5000/api/staff/export?token=${token}`;
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    window.location.href = `${baseUrl}/staff/export?token=${token}`;
   };
 
 
@@ -210,13 +211,13 @@ export default function AdminPanel() {
           </h3>
           <div className="dept-input-group">
             <input type="text" className="search-input" placeholder="New Department" value={newDept} onChange={e => setNewDept(e.target.value)} />
-            <button className="btn btn-primary" style={{padding:'0.5rem 1rem'}} onClick={handleAddDept}>
+            <button className="btn btn-primary" style={{padding:'0.5rem 1rem'}} onClick={addDepartment}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
           </div>
           <div className="dept-chips">
             {departments.map(d => (
-              <span key={d} className="dept-chip">{d} <span className="remove-chip" onClick={() => handleRemoveDept(d)}>×</span></span>
+              <span key={d} className="dept-chip">{d} <span className="remove-chip" onClick={() => deleteDepartment(d)}>×</span></span>
             ))}
           </div>
         </div>
