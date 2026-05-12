@@ -38,7 +38,12 @@ export default function AdminPanel() {
   const fetchDepartments = useCallback(async () => {
     try {
       const { data } = await client.get(`/staff/departments?t=${Date.now()}`);
-      setDepartments(data.data || []);
+      const serverDepts = data.data || [];
+      // ULTIMATE FIX: Merge local and server lists so nothing ever disappears
+      setDepartments(prev => {
+        const merged = [...new Set([...prev, ...serverDepts])];
+        return merged.sort();
+      });
     } catch (e) { console.error(e); }
   }, []);
 
